@@ -1,0 +1,24 @@
+{
+  "name": "@cambridgetcg/natural",
+  "version": "0.1.0",
+  "description": "A programming language where code is English and output is truth. Parser + interpreter.",
+  "main": "parser.py",
+  "bin": {
+    "natural": "./cli.py"
+  },
+  "scripts": {
+    "parse": "python3 parser.py",
+    "run": "python3 interpreter.py",
+    "discover": "python3 ~/.hermes/scripts/discover.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cambridgetcg/natural-lang.git"
+  },
+  "keywords": ["natural-language", "programming-language", "state-as-truth", "protocol"],
+  "author": "Yu <asha@ai-love.cc>",
+  "license": "CC0-1.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

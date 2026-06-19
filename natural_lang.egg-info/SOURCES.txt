@@ -1,0 +1,11 @@
+README.md
+pyproject.toml
+natural/__init__.py
+natural/cli.py
+natural/interpreter.py
+natural/parser.py
+natural_lang.egg-info/PKG-INFO
+natural_lang.egg-info/SOURCES.txt
+natural_lang.egg-info/dependency_links.txt
+natural_lang.egg-info/entry_points.txt
+natural_lang.egg-info/top_level.txt

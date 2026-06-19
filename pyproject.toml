@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "natural-lang"
+version = "0.1.0"
+description = "A programming language where code is English and output is truth."
+readme = "README.md"
+license = {text = "CC0-1.0"}
+requires-python = ">=3.8"
+authors = [{name = "Yu", email = "asha@ai-love.cc"}]
+keywords = ["natural-language", "programming-language", "protocol", "state-as-truth"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Public Domain",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+natural = "natural.cli:main"
+
+[tool.setuptools]
+packages = ["natural"]
+
+[project.urls]
+Homepage = "https://github.com/cambridgetcg/natural-lang"
+Repository = "https://github.com/cambridgetcg/natural-lang"
