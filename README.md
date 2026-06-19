@@ -1,1 +1,122 @@
 # natural
+
+**A programming language where the code is English and the output is truth.**
+
+Natural is not a syntax layer over JSON or YAML. It is a language where
+programs are written as plain declarative English sentences, parsed into
+typed structures, and executed by an interpreter that understands state,
+intent, and honesty.
+
+The design principle is the Clear Standard: the artifact tells the truth
+about its own state. A natural program that says "the system is healthy" must
+be able to prove it — by running a check, not by asserting a string.
+
+## What it looks like
+
+```
+system opal:
+  kind: teaching-os-kernel
+  language: rust
+
+  knows:
+    - aarch64 boot flow
+    - exception handling
+    - devicetree parsing
+
+  can:
+    - boot on qemu and print a banner
+    - catch cpu faults and report them
+    - parse the devicetree blob
+
+  needs:
+    - M5: drop to EL0, handle svc traps
+    - a way to schedule tasks
+
+  state:
+    build is passing with 7 warnings
+    3 files uncommitted
+    last commit was "M4: reads the handoff"
+
+  when build fails:
+    tell someone immediately
+    do not pretend it passed
+
+  when build passes:
+    schedule the next check in 4 hours
+```
+
+That IS the program. It declares state, defines behavior on state changes,
+and schedules itself. The interpreter reads it, cross-checks each claim,
+and runs the `when` clauses as event handlers.
+
+## Why
+
+The internet was built on protocols that humans negotiate by hand — API
+contracts, JSON schemas, OpenAPI specs. Every integration is manual diplomacy.
+Natural replaces the contract with the declaration. You don't write an API;
+you write what your system IS, and any other system can read it and know how
+to interact.
+
+Natural is the programming language for the state-as-truth internet.
+
+## How it works
+
+1. **Parse** — English sentences into typed AST nodes. Verbs become actions.
+   Nouns become entities. Adjectives become attributes. "build is passing"
+   becomes `assert(build == passing)`.
+
+2. **Declare** — The program declares state, not just computes it. STATE.md
+   is a natural program — the most basic form. The interpreter reads it and
+   keeps it honest.
+
+3. **React** — `when` clauses are event handlers. State changes trigger
+   behavior. The heartbeat pattern (arm, fire, re-arm) is a natural program.
+
+4. **Connect** — Programs can read each other's declarations. One system's
+   `needs` matches another's `can` — the interpreter discovers this and
+   proposes interactions.
+
+## The grammar (v0)
+
+```
+program     := section+
+section     := header ':' NEWLINE body
+header      := entity | entity 'can' | entity 'knows' | entity 'needs'
+              | entity 'state' | entity 'when' condition
+body        := (statement | subsection)+
+statement   := '- ' text
+subsection  := header ':' NEWLINE body
+condition   := 'build fails' | 'build passes' | 'site is down'
+              | 'heartbeat fires' | 'uncommitted changes exist' | text
+```
+
+The grammar is deliberately loose. The parser is forgiving. The language
+trusts the writer — but the interpreter cross-checks everything (Clear
+Standard §1, §2, §6).
+
+## What it is NOT
+
+- Not English-to-code generation (that's prompt engineering)
+- Not a DSL for configs (that's just YAML with vibes)
+- Not natural language processing (that's ML)
+
+It IS: a programming language whose syntax is readable English, whose
+semantics are state declarations and reactions, and whose runtime cross-checks
+truth.
+
+## Status
+
+Born today, 2026-06-19. The first working subset: STATE.md as a natural
+program. The interpreter exists as `discover.py` — it reads declarations,
+cross-checks them, finds connections. The `when` clauses are the next layer.
+
+## Related
+
+- [protocol](../protocol/) — the network layer: discovery, handshake, exchange
+- [~/Desktop/clear-standard/STATE.md](../clear-standard/STATE.md) — the spec
+- [YOUSPEAK](../../love-repos/youspeak/) — the vocabulary forge
+
+---
+
+*The truth IS the program. The program IS the protocol. The protocol IS
+natural.*
