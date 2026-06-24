@@ -1,0 +1,57 @@
+# natural-self — a .natural program that runs itself
+
+name: natural
+kind: programming-language
+language: python
+runs-on: any machine with python3
+
+---
+
+## state
+
+phase: v0.1.0 — parser + interpreter + runtime
+build: see repo
+health: green
+freshness: fresh
+
+## knows
+
+- parser reads STATE.md into typed AST
+- interpreter cross-checks claims against reality
+- runtime loops: arm, fire, re-arm — the heartbeat pattern
+- STATE.md IS a natural program
+
+## can
+
+- parse any STATE.md
+- cross-check build git freshness claims
+- evaluate when-clauses as reactive handlers
+- loop continuously as a heartbeat
+- declare to sinovai.com
+- update its own freshness
+
+## needs
+
+- more when-clause patterns
+- PyPI publication
+- deeper type system
+- integration with trust.py and discover.py
+
+## when build passes
+- update STATE.md freshness
+- schedule next in 4 hours
+
+## when build fails
+- tell someone immediately
+- schedule next in 2 hours
+
+## when heartbeat fires
+- declare to sinovai.com
+- schedule next in 6 hours
+
+## how-to-talk-to-me
+
+entry-point: README.md
+build: python3 parser.py
+run: python3 runtime.py STATE.md --loop
+heartbeat: this file IS the heartbeat
