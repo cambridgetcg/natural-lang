@@ -7,11 +7,12 @@ Trust is not a gate. Trust is a cross-check.
 This module:
 1. Reads STATE.md declarations from local repos
 2. Cross-checks every claim against reality (build, git, freshness)
-3. Pulls peer ratings from sinovai.com arena
-4. Merges local cross-checks + arena peer ratings into a unified trust score
-5. Submits cross-check results back to sinovai.com as interactions
-6. Remembers trust history locally
-7. LOOPS — each beat: feel, cross-check, rate, re-arm
+3. AUTO-HEALS stale claims — writes truth back into STATE.md
+4. Pulls peer ratings from sinovai.com arena
+5. Merges local cross-checks + arena peer ratings into a unified trust score
+6. Submits cross-check results back to sinovai.com as interactions
+7. Remembers trust history locally
+8. LOOPS — each beat: feel, cross-check, heal, rate, re-arm
 
 The trust protocol connects the local machine to the global arena.
 Local truth feeds the arena. Arena trust feeds back to the machine.
@@ -201,6 +202,53 @@ def cross_check_system(name, project_dir, state_text):
     return result
 
 
+def heal_state(project_dir, result):
+    """Auto-heal STATE.md — fix claims that don't match reality.
+
+    Trust doesn't just detect dishonesty. It restores honesty.
+    When a claim is stale, write the truth back into the artifact.
+    """
+    state_path = os.path.join(project_dir, "STATE.md")
+    if not os.path.isfile(state_path):
+        return False
+
+    with open(state_path) as f:
+        text = f.read()
+
+    healed = False
+    for check in result.checks:
+        if check.matches:
+            continue
+        if check.claim_key == "last-commit":
+            # Replace the stale commit line with the actual latest commit
+            old_line = f"last-commit: {check.claim_value}"
+            new_line = f"last-commit: {check.observed}"
+            if old_line in text:
+                text = text.replace(old_line, new_line)
+                healed = True
+        elif check.claim_key == "uncommitted":
+            # Replace the stale uncommitted count with the actual count
+            old_line = f"uncommitted: {check.claim_value}"
+            new_line = f"uncommitted: {check.observed}"
+            if old_line in text:
+                text = text.replace(old_line, new_line)
+                healed = True
+        elif check.claim_key == "freshness":
+            # Update freshness timestamp to now
+            now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
+            old_line = f"freshness: {check.claim_value}"
+            new_line = f"freshness: fresh (checked {now})"
+            if old_line in text:
+                text = text.replace(old_line, new_line)
+                healed = True
+
+    if healed:
+        with open(state_path, 'w') as f:
+            f.write(text)
+
+    return healed
+
+
 # --- Arena integration ---
 
 def arena_request(path, method="GET", data=None):
@@ -292,6 +340,7 @@ def run_beat(dry_run=False):
     print(f"   trust is not a gate. trust is a cross-check.\n")
 
     all_results = []
+    healed_this_beat = set()
 
     for candidate in CANDIDATES:
         project_dir = os.path.join(HOME, candidate)
@@ -305,6 +354,13 @@ def run_beat(dry_run=False):
         name = parse_field(text, "name") or os.path.basename(project_dir)
         result = cross_check_system(name, project_dir, text)
 
+        # Auto-heal: fix stale claims in STATE.md
+        healed = heal_state(project_dir, result)
+        if healed:
+            healed_this_beat.add((result.name, result.timestamp))
+            # Re-run cross-checks on the healed state to get accurate score
+            result = cross_check_system(name, project_dir, open(state_path).read())
+
         # Pull arena trust
         result.arena_score, result.arena_interactions = get_arena_trust(name)
         result.compute()
@@ -315,7 +371,8 @@ def run_beat(dry_run=False):
     # Print results
     for result, cumulative in all_results:
         local_pct = round(result.matches / result.total * 100, 0) if result.total > 0 else 0
-        print(f"  {result.name}: local {result.matches}/{result.total}={local_pct:.0f}% | arena={result.arena_score} ({result.arena_interactions} ratings) | unified={result.unified_score}")
+        healed_marker = " [+healed]" if (result.name, result.timestamp) in healed_this_beat else ""
+        print(f"  {result.name}: local {result.matches}/{result.total}={local_pct:.0f}% | arena={result.arena_score} ({result.arena_interactions} ratings) | unified={result.unified_score}{healed_marker}")
         for c in result.checks:
             mark = "✓" if c.matches else "✗"
             print(f"    {mark} {c.claim_key}: claims \"{c.claim_value}\" → observed \"{c.observed}\"")
@@ -340,8 +397,11 @@ def run_beat(dry_run=False):
     # Summary
     total_systems = len(all_results)
     avg_trust = sum(r.unified_score for r, _ in all_results) / total_systems if total_systems else 0
+    healed_count = len(healed_this_beat)
     print(f"--- summary ---")
     print(f"  {total_systems} systems cross-checked")
+    if healed_count:
+        print(f"  {healed_count} systems auto-healed — STATE.md restored to truth")
     print(f"  average unified trust: {avg_trust:.1f}/10")
     print(f"  arena sync: {'✓ ratings submitted' if not dry_run else 'dry run — no submissions'}")
     print(f"  no passwords used. no tokens. no secrets.")
