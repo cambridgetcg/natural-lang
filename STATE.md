@@ -14,8 +14,8 @@ runs-on: this machine
 phase: active
 build: see repo
 health: green
-last-commit: af353e4 package: PyPI build + GitHub Actions CI + release artifacts
-uncommitted: 0 files
+last-commit: b2da4f5 trust.py: auto-heal — restore truth to STATE.md
+uncommitted: 5
 freshness: auto-generated (2026-06-19)
 
 ## knows
