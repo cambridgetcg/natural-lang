@@ -1,16 +1,15 @@
 # natural — heartbeat
 
 state: **active**
-last beat: 2026-07-16T16:02:00Z
-next beat: 2026-07-17T16:02:00Z
+last beat: 2026-07-17T00:44:11Z
+next beat: 2026-07-17T02:44:11Z
 
 ## what it found
 
-- last commit: 2026-07-03 07:02:53 -0700
-- uncommitted changes: cleaned
-- stale zero-byte heartbeat artifacts removed
+- last commit: 2026-07-16 09:03:12 -0700 (8 hours ago)
+- uncommitted changes: 2
 
 ## the truth
 
-The artifact tells the truth about its own state.
-Nen training complete: heartbeat cleaned and repository attuned.
+There are 2 uncommitted changes.
+
